@@ -1,0 +1,104 @@
+erDiagram
+    users ||--o{ orders : places
+    users ||--o{ carts : has
+    users ||--o{ addresses : has
+    categories ||--o{ products : contains
+    products ||--o{ cart_items : "added to"
+    products ||--o{ order_items : "ordered in"
+    carts ||--o{ cart_items : contains
+    orders ||--o{ order_items : contains
+    orders ||--|| payments : "paid via"
+
+    users {
+        bigint id PK
+        string name
+        string email
+        string password
+        enum role "admin/customer"
+        string phone
+        text address
+        timestamp created_at
+    }
+
+    categories {
+        bigint id PK
+        string name
+        string slug
+        string image
+        text description
+        boolean is_active
+    }
+
+    products {
+        bigint id PK
+        bigint category_id FK
+        string name
+        string slug
+        text description
+        decimal price "per kg/unit"
+        string unit "kg/pcs/pack"
+        integer stock
+        string image
+        boolean is_active
+        boolean is_featured
+    }
+
+    carts {
+        bigint id PK
+        bigint user_id FK
+    }
+
+    cart_items {
+        bigint id PK
+        bigint cart_id FK
+        bigint product_id FK
+        integer quantity
+        decimal price
+    }
+
+    orders {
+        bigint id PK
+        string order_number "KD-20260217-001"
+        bigint user_id FK
+        decimal subtotal
+        decimal shipping_fee
+        decimal total
+        enum status "pending/to_pay/to_ship/to_receive/arrived/completed/cancelled"
+        text shipping_address
+        string phone
+        text notes
+        timestamps
+    }
+
+    order_items {
+        bigint id PK
+        bigint order_id FK
+        bigint product_id FK
+        string product_name
+        decimal product_price
+        integer quantity
+        decimal subtotal
+    }
+
+    payments {
+        bigint id PK
+        bigint order_id FK
+        enum method "cod/online_banking/ewallet"
+        enum status "pending/paid/failed/refunded"
+        decimal amount
+        string reference_number
+        timestamp paid_at
+    }
+
+    addresses {
+        bigint id PK
+        bigint user_id FK
+        string label "Rumah/Pejabat"
+        string recipient_name
+        string phone
+        text full_address
+        string city
+        string state
+        string postcode
+        boolean is_default
+    }
