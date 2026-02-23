@@ -340,9 +340,82 @@
             color: white;
         }
 
+        .admin-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text);
+            padding: 4px;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .profile-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
-                display: none;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 50;
+            }
+
+            .admin-layout.sidebar-open .sidebar {
+                transform: translateX(0);
+            }
+
+            .admin-layout.sidebar-open .sidebar-overlay {
+                display: block;
+                opacity: 1;
+            }
+
+            .mobile-menu-btn {
+                display: block;
             }
 
             .main-content {
@@ -357,7 +430,10 @@
 </head>
 
 <body>
-    <div class="admin-layout">
+    <div class="admin-layout" x-data="{ sidebarOpen: false }" :class="{ 'sidebar-open': sidebarOpen }">
+        <!-- OVERLAY BILA SIDEBAR TERBUKA (MOBILE) -->
+        <div class="sidebar-overlay" @click="sidebarOpen = false"></div>
+
         <!-- SIDEBAR -->
         <aside class="sidebar">
             <div class="sidebar-logo">
@@ -391,6 +467,27 @@
 
         <!-- MAIN CONTENT -->
         <main class="main-content">
+            <!-- ADMIN NAVBAR -->
+            <nav class="admin-navbar">
+                <div class="nav-left">
+                    <button @click="sidebarOpen = !sidebarOpen" class="mobile-menu-btn">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <!-- You can add breadcrumbs or title here if needed -->
+                </div>
+                <div class="nav-right">
+                    <div class="admin-profile">
+                        <span class="profile-name">{{ Auth::user()->name }}</span>
+                        <div class="profile-avatar">
+                            {{ substr(Auth::user()->name, 0, 1) }}
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
             <!-- ALERTS -->
             @if(session('success'))
                 <div class="alert alert-success">✅ {{ session('success') }}</div>
