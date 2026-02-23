@@ -14,11 +14,19 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        if (
+            isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ||
+            isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https'
+        ) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
+        if (request()->server('HTTP_X_FORWARDED_HOST')) {
+            $host = request()->server('HTTP_X_FORWARDED_HOST');
+            $scheme = request()->server('HTTP_X_FORWARDED_PROTO', 'https');
+            \Illuminate\Support\Facades\URL::forceRootUrl("$scheme://$host");
+        }
     }
 }
